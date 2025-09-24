@@ -58,7 +58,17 @@ cd onFly-n8n
 
 ### 2. Configure as Variáveis de Ambiente
 
-Crie um arquivo `.env` baseado no exemplo:
+Copie o arquivo de exemplo e configure as variáveis:
+
+```bash
+# Copie o arquivo de exemplo
+cp .env.example .env
+
+# Edite o arquivo .env com suas configurações
+nano .env
+```
+
+Ou configure diretamente as seguintes variáveis:
 
 ```bash
 # PostgreSQL Configuration
