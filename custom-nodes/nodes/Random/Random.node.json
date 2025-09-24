@@ -1,0 +1,20 @@
+{
+	"node": "n8n-nodes-onfly.Random",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": [
+		"Utility"
+	],
+	"resources": {
+		"primaryDocumentation": [
+			{
+				"url": "https://www.random.org/"
+			}
+		],
+		"credentialDocumentation": [
+			{
+				"url": "https://www.random.org/clients/http/"
+			}
+		]
+	}
+}

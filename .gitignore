@@ -47,6 +47,31 @@ web_modules/
 # TypeScript cache
 *.tsbuildinfo
 
+# Build output
+dist/
+
+# Environment files
+.env
+.env.local
+
+# Docker volumes
+postgres_data/
+n8n_data/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Custom nodes development
+custom-nodes/*/node_modules/
+custom-nodes/*/dist/
+
 # Optional npm cache directory
 .npm
 
@@ -137,3 +162,4 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+Desafio Custom Node n8n
