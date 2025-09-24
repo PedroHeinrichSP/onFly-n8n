@@ -46,26 +46,68 @@ onFly-n8n/
 
 ### Pré-requisitos
 
+**Para todos os sistemas operacionais:**
 - Docker e Docker Compose
 - Git
 
+**Instalação específica por SO:**
+
+#### 🐧 **Linux (Ubuntu/Debian)**
+```bash
+# Docker
+sudo apt update
+sudo apt install docker.io docker-compose-plugin
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Adicionar usuário ao grupo docker (opcional, evita usar sudo)
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Git (se não tiver)
+sudo apt install git
+```
+
+#### 🪟 **Windows**
+1. **Docker Desktop**: Baixe e instale o [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+2. **Git**: Baixe e instale o [Git for Windows](https://git-scm.com/download/win)
+3. **PowerShell ou Command Prompt**: Use qualquer um
+4. **WSL2** (Recomendado): Habilite o WSL2 para melhor performance
+
 ### 1. Clone o Repositório
 
+#### 🐧 **Linux**
 ```bash
+git clone https://github.com/PedroHeinrichSP/onFly-n8n.git
+cd onFly-n8n
+```
+
+#### 🪟 **Windows (PowerShell/CMD)**
+```cmd
 git clone https://github.com/PedroHeinrichSP/onFly-n8n.git
 cd onFly-n8n
 ```
 
 ### 2. Configure as Variáveis de Ambiente
 
-Copie o arquivo de exemplo e configure as variáveis:
-
+#### 🐧 **Linux**
 ```bash
 # Copie o arquivo de exemplo
 cp .env.example .env
 
-# Edite o arquivo .env com suas configurações
+# Edite o arquivo .env
 nano .env
+# ou use seu editor preferido: vim, gedit, vscode, etc.
+```
+
+#### 🪟 **Windows**
+```cmd
+# Copie o arquivo de exemplo
+copy .env.example .env
+
+# Edite o arquivo .env
+notepad .env
+# ou use VS Code: code .env
 ```
 
 Ou configure diretamente as seguintes variáveis:
@@ -73,10 +115,10 @@ Ou configure diretamente as seguintes variáveis:
 ```bash
 # PostgreSQL Configuration
 POSTGRES_USER=n8n_admin
-POSTGRES_PASSWORD=secure_admin_password_2024
+POSTGRES_PASSWORD=secure_admin_password_2025
 POSTGRES_DB=n8n_database
 POSTGRES_NON_ROOT_USER=n8n_user
-POSTGRES_NON_ROOT_PASSWORD=secure_user_password_2024
+POSTGRES_NON_ROOT_PASSWORD=secure_user_password_2025
 
 # n8n Configuration
 N8N_PORT=5678
@@ -90,13 +132,29 @@ TZ=America/Sao_Paulo
 
 ### 3. Inicie a Infraestrutura
 
+#### 🐧 **Linux** 
 ```bash
-# Inicia PostgreSQL e n8n
+# Método 1: Com permissões Docker configuradas
+docker compose up -d
+
+# Método 2: Usando sudo (se necessário)
 sudo docker compose up -d
 
 # Verifica se os containers estão funcionando
-sudo docker compose ps
+docker compose ps
+# ou: sudo docker compose ps
 ```
+
+#### 🪟 **Windows**
+```cmd
+# Inicia PostgreSQL e n8n
+docker compose up -d
+
+# Verifica se os containers estão funcionando
+docker compose ps
+```
+
+**Aguarde alguns minutos** para que o PostgreSQL inicialize completamente antes do n8n.
 
 ### 4. Configure o Custom Node
 
@@ -104,8 +162,9 @@ sudo docker compose ps
 
 O custom node será instalado automaticamente no diretório `/home/node/.n8n/custom/` do container.
 
-#### Método 2: Manual
+#### Método 2: Manual (se necessário)
 
+#### 🐧 **Linux**
 ```bash
 # Entre no diretório do custom node
 cd custom-nodes
@@ -114,14 +173,38 @@ cd custom-nodes
 npm run build
 
 # Copie os arquivos para o container
-sudo docker cp package.json n8n:/home/node/.n8n/custom/
-sudo docker cp dist/. n8n:/home/node/.n8n/custom/dist/
+docker cp package.json n8n:/home/node/.n8n/custom/
+# ou: sudo docker cp package.json n8n:/home/node/.n8n/custom/
+
+docker cp dist/. n8n:/home/node/.n8n/custom/dist/
+# ou: sudo docker cp dist/. n8n:/home/node/.n8n/custom/dist/
 
 # Instale as dependências no container
-sudo docker exec n8n sh -c "cd /home/node/.n8n/custom && npm install"
+docker exec n8n sh -c "cd /home/node/.n8n/custom && npm install"
+# ou: sudo docker exec n8n sh -c "cd /home/node/.n8n/custom && npm install"
 
 # Reinicie o n8n
-sudo docker compose restart n8n
+docker compose restart n8n
+# ou: sudo docker compose restart n8n
+```
+
+#### 🪟 **Windows**
+```cmd
+# Entre no diretório do custom node
+cd custom-nodes
+
+# Compile o projeto
+npm run build
+
+# Copie os arquivos para o container
+docker cp package.json n8n:/home/node/.n8n/custom/
+docker cp dist/. n8n:/home/node/.n8n/custom/dist/
+
+# Instale as dependências no container
+docker exec n8n sh -c "cd /home/node/.n8n/custom && npm install"
+
+# Reinicie o n8n
+docker compose restart n8n
 ```
 
 ### 5. Acesse o n8n
@@ -212,28 +295,149 @@ curl "https://www.random.org/integers/?num=1&min=1&max=100&col=1&base=10&format=
 
 ## 🐛 Troubleshooting
 
-### Container não inicia
+### 🚫 Erro "unauthorized: authentication required"
 
+**Problema**: Erro de autenticação ao baixar imagens do Docker Registry
+
+Este erro geralmente aparece ao tentar baixar imagens Docker (postgres, n8n) e pode ter várias causas:
+
+#### ✅ **Solução 1: Fazer login no Docker Hub (Recomendada)**
+```bash
+# Fazer login no Docker Hub
+docker login
+
+# Ou especificar o registry
+docker login docker.io
+
+# Digite seu username e password do Docker Hub
+```
+
+#### 🔄 **Solução 2: Limpar cache e tentar novamente**
+```bash
+# Limpar todas as imagens e containers
+docker system prune -a
+
+# Ou apenas limpar o cache
+docker builder prune
+
+# Tentar novamente
+docker compose up -d
+```
+
+#### 🌐 **Solução 3: Verificar conectividade**
+```bash
+# Testar conectividade com Docker Hub
+ping docker.io
+
+# Testar download manual da imagem
+docker pull postgres:15
+docker pull n8nio/n8n:1.85.4
+```
+
+#### ⚡ **Solução 4: Usar sudo (se problema de permissão local)**
+Se o erro persiste, pode ser permissão local:
+```bash
+# Adicionar seu usuário ao grupo docker
+sudo usermod -aG docker $USER
+
+# Aplicar as mudanças (escolha uma opção):
+# Opção A: Reiniciar a sessão (logout/login)
+# Opção B: Executar o comando abaixo
+newgrp docker
+
+# Ou usar sudo temporariamente
+sudo docker compose up -d
+```
+
+#### 🔍 **Solução 5: Verificar se Docker está rodando**
+```bash
+# Verificar status do Docker
+sudo systemctl status docker
+
+# Se não estiver rodando, iniciar:
+sudo systemctl start docker
+
+# Habilitar auto-start no boot:
+sudo systemctl enable docker
+```
+
+### 🔧 Container não inicia
+
+#### 🐧 **Linux**
 ```bash
 # Verifique os logs
-sudo docker compose logs n8n
-sudo docker compose logs postgres
+docker compose logs n8n
+docker compose logs postgres
+# ou com sudo: sudo docker compose logs n8n
 
 # Verifique se as portas estão livres
 sudo netstat -tlnp | grep 5678
+sudo netstat -tlnp | grep 5432
+
+# Verifique se o Docker está funcionando
+docker --version
+sudo systemctl status docker
 ```
 
-### Custom node não aparece
+#### 🪟 **Windows**
+```cmd
+# Verifique os logs
+docker compose logs n8n
+docker compose logs postgres
 
+# Verifique se o Docker Desktop está rodando
+docker --version
+
+# Verificar portas (PowerShell)
+netstat -ano | findstr 5678
+netstat -ano | findstr 5432
+```
+
+### 🎯 Custom node não aparece
+
+#### 🐧 **Linux**
 ```bash
 # Verifique se os arquivos estão no local correto
-sudo docker exec n8n ls -la /home/node/.n8n/custom/
+docker exec n8n ls -la /home/node/.n8n/custom/
+# ou: sudo docker exec n8n ls -la /home/node/.n8n/custom/
 
 # Verifique os logs do n8n
-sudo docker logs n8n
+docker logs n8n
+# ou: sudo docker logs n8n
 
 # Reinicie o container
-sudo docker compose restart n8n
+docker compose restart n8n
+# ou: sudo docker compose restart n8n
+
+# Limpe e reconstrua (se necessário)
+docker compose down
+docker compose up -d
+```
+
+#### 🪟 **Windows**
+```cmd
+# Verifique se os arquivos estão no local correto
+docker exec n8n ls -la /home/node/.n8n/custom/
+
+# Verifique os logs do n8n
+docker logs n8n
+
+# Reinicie o container
+docker compose restart n8n
+
+# Limpe e reconstrua (se necessário)
+docker compose down
+docker compose up -d
+```
+
+### 🔒 Erros de permissão de arquivos (Linux)
+
+```bash
+# Ajuste permissões se necessário
+sudo chown -R $USER:$USER custom-nodes/
+
+# Ou ajuste permissões específicas
+chmod +x init-data.sh
 ```
 
 ### Erros de permissão
