@@ -265,26 +265,6 @@ O node utiliza a API pública do Random.org:
 - **DB_TYPE**: postgresdb
 - **N8N_ENCRYPTION_KEY**: Chave de criptografia obrigatória
 
-## 🤝 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
-4. Push para a branch (`git push origin feature/nova-feature`)
-5. Abra um Pull Request
-
 ## 📝 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
-
-## 📞 Suporte
-
-Para dúvidas ou problemas:
-- Abra uma issue no GitHub
-- Email: dev@onfly.com
-
----
-
-**Desenvolvido por**: onFly Team  
-**Versão**: 0.1.0  
-**Data**: Setembro 2024
